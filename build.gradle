@@ -1,0 +1,101 @@
+//  Copyright (c) 2018 Gonzalo Müller Bravo.
+//  Licensed under the MIT License (MIT), see LICENSE.txt
+
+plugins {
+  id 'checkstyle'
+  id 'codenarc'
+  id 'com.gradle.plugin-publish' version '0.10.0'
+  id 'groovy'
+  id 'jacoco'
+}
+
+repositories {
+  jcenter()
+  maven {
+    url 'https://dl.bintray.com/gmullerb/all.shared.config.style'
+  }
+}
+
+configurations {
+  styleConfig
+}
+
+dependencies {
+  compile gradleApi()
+  styleConfig "all.shared.config:base-style-config:$BASE_STYLE_CONFIG_VERSION"
+  testCompile gradleTestKit()
+  testCompile 'org.junit.jupiter:junit-jupiter-api:+'
+  testCompile 'org.mockito:mockito-core:+'
+  testRuntime 'org.junit.jupiter:junit-jupiter-engine:+'
+}
+
+final CODE_FILES = ['*.gradle', '*.groovy']
+final PLUGIN_SITE = 'https://github.com/gmullerb/file-lister/'
+final ROOT_FOLDER = '.'
+
+// Plugin settings
+//////////////////
+
+checkstyle {
+  toolVersion = CHECKSTYLE_VERSION
+  config = resources.text.fromArchiveEntry(configurations.styleConfig, 'common/common-checks.xml')
+}
+
+codenarc {
+  toolVersion = CODENARC_VERSION
+  config = resources.text.fromArchiveEntry(configurations.styleConfig, 'gradle/gradle-rules.groovy')
+}
+
+pluginBundle {
+  website = PLUGIN_SITE
+  vcsUrl = PLUGIN_SITE
+  description = 'Small set of utilities for listing files from a Gradle project'
+  tags = ['file', 'directory', 'folder', 'gitignore', 'filetree', 'listing files', 'gradle project']
+
+  plugins {
+    greetingsPlugin {
+      id = hasProperty('PLUGIN_ID') ? property('PLUGIN_ID') : 'Set plugin id'
+      displayName = 'File Lister plugin'
+    }
+  }
+}
+
+// TASKS
+////////
+
+task assess (type: Checkstyle) {
+  // Checkstyle task settings
+  classpath = files('dummy') // Required by Checkstyle, Not required for Checker modules
+  source files(ROOT_FOLDER) {
+    include CODE_FILES + ['*.gitignore', '*.md', '*.properties', '*.txt']
+  }
+  // gradle task settings
+  description = 'Run Common Checkstyle analysis for all files.'
+  group = GROUP_ASSESS
+}
+
+task assessGradle(type: CodeNarc) {
+  // CodeNarc task settings
+  source files(ROOT_FOLDER) {
+    include CODE_FILES
+  }
+  // gradle task settings
+  description = 'Run Codenarc analysis for all gradle files.'
+  group = GROUP_ASSESS
+}
+
+test {
+  // Test task settings
+  useJUnitPlatform()
+  // gradle task settings
+  finalizedBy jacocoTestReport, jacocoTestCoverageVerification
+}
+
+assemble {
+  dependsOn += ['assessGradle', 'assess']
+}
+
+// Default task
+///////////////
+
+defaultTasks 'build'

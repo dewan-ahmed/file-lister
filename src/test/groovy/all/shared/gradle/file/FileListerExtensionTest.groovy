@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times
 import static org.mockito.Mockito.verify
 
 @CompileStatic
-class FileListerTest {
+class FileListerExtensionTest {
 
   private static final String TEST_FILE1 = 'testFile1.ext1'
   private static final String TEST_FILE2 = 'testFile2.ext2'
@@ -85,7 +85,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFullFileTree() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainFullFileTree()
 
@@ -94,7 +94,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTree() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainPartialFileTree()
 
@@ -103,7 +103,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFullFileTreeWithPath() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainFullFileTree(testDir1.path)
 
@@ -112,7 +112,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithPath() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainPartialFileTree(testDir1.path)
 
@@ -121,7 +121,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFullFileTreeWithGitIgnoreFiles() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
 
     final ConfigurableFileTree fileTree = fileLister.obtainFullFileTree(testDir1.path)
@@ -131,7 +131,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFiles() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
 
     final ConfigurableFileTree fileTree = fileLister.obtainPartialFileTree(testDir1.path)
@@ -141,7 +141,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFullFileTreeWithGitIgnoreFilesAndMatchingPattern() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1')
     testGitIgnoreFile2.write('/*.ext2')
@@ -153,7 +153,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFilesAndMatchingPattern() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1')
     testGitIgnoreFile2.write('/*.ext2')
@@ -165,7 +165,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFilesAndMatchingPatternEndingSlash() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('*.ext1/')
     testGitIgnoreFile2.write('*.ext2/')
@@ -177,7 +177,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFilesAndTwoSlashes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1/')
     testGitIgnoreFile2.write('/*.ext2/')
@@ -189,7 +189,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFilesAndMatchingPatternNoSlash() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('*.ext1')
     testGitIgnoreFile2.write('*.ext2')
@@ -201,7 +201,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFilesAndMatchingPatternWithCommentsAndEmpties() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('# /*.ext1')
     testGitIgnoreFile1.write('   ')
@@ -214,7 +214,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFilesAndMatchingPatternIgnorePattern() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1[sub]')
     testGitIgnoreFile2.write('*.ext2!end')
@@ -226,7 +226,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithPathAndGitIgnoreFilesAndMatchingPattern() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1')
     testGitIgnoreFile2.write('/*.ext2')
@@ -238,7 +238,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithPathAndGitIgnoreFilesAndMatchingPatternEndingSlash() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('*.ext1/')
     testGitIgnoreFile2.write('*.ext2/')
@@ -250,7 +250,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithPathAndGitIgnoreFilesAndTwoSlashes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1/')
     testGitIgnoreFile2.write('/*.ext2/')
@@ -262,7 +262,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithPathAndGitIgnoreFilesAndMatchingPatternNoSlash() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('*.ext1')
     testGitIgnoreFile2.write('*.ext2')
@@ -274,7 +274,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithPathAndGitIgnoreFilesAndMatchingPatternWithCommentsAndEmpties() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('# /*.ext1')
     testGitIgnoreFile1.write('   ')
@@ -287,7 +287,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithPathAndGitIgnoreFilesAndMatchingPatternIgnorePattern() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1[sub]')
     testGitIgnoreFile2.write('*.ext2!end')
@@ -299,7 +299,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFullFileTreeWithIncludes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainFullFileTree(testDir1.path, [includes: ['*.ext1']])
 
@@ -308,7 +308,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithIncludes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainPartialFileTree(testDir1.path, [includes: ['*.ext1']])
 
@@ -317,7 +317,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFullFileTreeWitheExcludes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainFullFileTree(testDir1.path, [excludes: ['*.ext1']])
 
@@ -326,7 +326,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithExcludes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainPartialFileTree(testDir1.path, [excludes: ['*.ext1']])
 
@@ -335,7 +335,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFullFileTreeWithIncludesAnyFolder() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainFullFileTree(testDir1.path, [includes: ['**/*.ext1']])
 
@@ -344,7 +344,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithIncludesAnyFolder() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainPartialFileTree(testDir1.path, [includes: ['**/*.ext1']])
 
@@ -353,7 +353,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFullFileTreeWitheExcludesAnyFolder() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainFullFileTree(testDir1.path, [excludes: ['**/*.ext1']])
 
@@ -362,7 +362,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithExcludesAnyFolder() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainPartialFileTree(testDir1.path, [excludes: ['**/*.ext1']])
 
@@ -371,7 +371,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFilesAndMatchingPatternWithIncludes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1')
     testGitIgnoreFile2.write('/*.ext2')
@@ -383,7 +383,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainPartialFileTreeWithGitIgnoreFilesAndMatchingPatternWithExcludes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
     createGitIgnoreFiles()
     testGitIgnoreFile1.write('/*.ext1')
     testGitIgnoreFile2.write('/*.ext2')
@@ -395,7 +395,7 @@ class FileListerTest {
 
   @Test
   void shouldObtainFileTreeWithIncludesAndExcludes() {
-    final FileLister fileLister = new FileLister(project)
+    final FileListerExtension fileLister = new FileListerExtension(project)
 
     final ConfigurableFileTree fileTree = fileLister.obtainFullFileTree(testDir1.path, [includes: ['*.ext1'], excludes: ['**/*.ext1']])
 
@@ -406,7 +406,7 @@ class FileListerTest {
   void shouldObtainFileTreeWithLogger() {
     final Project spyProject = spy(project)
     final Logger mockLogger = mock(Logger)
-    final FileLister fileLister = new FileLister(spyProject)
+    final FileListerExtension fileLister = new FileListerExtension(spyProject)
     doReturn(mockLogger)
       .when(spyProject)
       .getLogger()

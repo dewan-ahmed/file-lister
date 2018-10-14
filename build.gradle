@@ -12,7 +12,7 @@ plugins {
 repositories {
   jcenter()
   maven {
-    url 'https://dl.bintray.com/gmullerb/all.shared.config.style'
+    url 'https://dl.bintray.com/gmullerb/all.shared.quality'
   }
 }
 
@@ -22,16 +22,18 @@ configurations {
 
 dependencies {
   compile gradleApi()
-  styleConfig "all.shared.config:base-style-config:$BASE_STYLE_CONFIG_VERSION"
+  styleConfig "all.shared.quality:base-style-config:$BASE_STYLE_CONFIG_VERSION"
   testCompile gradleTestKit()
   testCompile 'org.junit.jupiter:junit-jupiter-api:+'
   testCompile 'org.mockito:mockito-core:+'
   testRuntime 'org.junit.jupiter:junit-jupiter-engine:+'
 }
 
-final CODE_FILES = ['*.gradle', '*.groovy']
 final PLUGIN_SITE = 'https://github.com/gmullerb/file-lister/'
-final ROOT_FOLDER = '.'
+
+apply plugin: 'all.shared.gradle.file-lister'
+
+final allFilesInTree = fileLister.obtainPartialFileTree()
 
 // Plugin settings
 //////////////////
@@ -53,8 +55,8 @@ pluginBundle {
   tags = ['file', 'directory', 'folder', 'gitignore', 'filetree', 'listing files', 'gradle project']
 
   plugins {
-    greetingsPlugin {
-      id = hasProperty('PLUGIN_ID') ? property('PLUGIN_ID') : 'Set plugin id'
+    thePlugin {
+      id = project.hasProperty('PLUGIN_ID') ? property('PLUGIN_ID') : 'Set plugin id'
       displayName = 'File Lister plugin'
     }
   }
@@ -66,9 +68,7 @@ pluginBundle {
 task assess (type: Checkstyle) {
   // Checkstyle task settings
   classpath = files('dummy') // Required by Checkstyle, Not required for Checker modules
-  source files(ROOT_FOLDER) {
-    include CODE_FILES + ['*.gitignore', '*.md', '*.properties', '*.txt']
-  }
+  source = allFilesInTree
   // gradle task settings
   description = 'Run Common Checkstyle analysis for all files.'
   group = GROUP_ASSESS
@@ -76,9 +76,7 @@ task assess (type: Checkstyle) {
 
 task assessGradle(type: CodeNarc) {
   // CodeNarc task settings
-  source files(ROOT_FOLDER) {
-    include CODE_FILES
-  }
+  source = allFilesInTree.filter { it.name.matches('.*\\.gradle') }
   // gradle task settings
   description = 'Run Codenarc analysis for all gradle files.'
   group = GROUP_ASSESS
@@ -92,7 +90,7 @@ test {
 }
 
 assemble {
-  dependsOn += ['assessGradle', 'assess']
+  dependsOn += ['assessGradle', 'assess', 'codenarcMain', 'codenarcTest']
 }
 
 // Default task

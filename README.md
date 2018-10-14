@@ -1,6 +1,6 @@
 # File lister
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](/LICENSE.txt) ![release](https://img.shields.io/badge/version-1.0-blue.svg)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](/LICENSE.txt) [![Download](https://api.bintray.com/packages/gmullerb/all.shared.gradle/file-lister/images/download.svg)](https://bintray.com/gmullerb/all.shared.gradle/file-lister/_latestVersion)
 
 **This project offers a small set of utilities for listing files from a Gradle project.**
 
@@ -56,7 +56,7 @@ The result will be:
 * When using `obtainPartialFileTree()`: `/folderA/file1.ext1`, `/folderA/file1.ext3` and `/folderB/file1.ext1`
 
 > [1] [All ANT default excludes](https://ant.apache.org/manual/dirtasks.html#defaultexcludes).  
-> [2] For an actual use example see [Base code for a Web project - Java + JS](https://github.com/gmullerb/basecode).
+> [2] For an actual use example see [basecode project](https://github.com/gmullerb/basecode).
 
 ## Using/Configuration
 
@@ -121,7 +121,7 @@ git clone https://github.com/gmullerb/file-lister
 
 * To get all the tasks for the project: `gradlew tasks --all`
 
-## Folders structure
+### Folders structure
 
 ```
   /src
@@ -132,10 +132,28 @@ git clone https://github.com/gmullerb/file-lister
 ```
 
 - `src/main/groovy`: Source code files.
-  - [`FileLister`](src/main/groovy/all/shared/gradle/file/FileLister.groovy) is where all the magic happens.
+  - [`FileListerExtension`](src/main/groovy/all/shared/gradle/file/FileListerExtension.groovy) is where all the magic happens.
 - `src/test/groovy`: Test code files[1].
 
 > [1] Tests are done with [JUnit](http://junit.org) and [Mockito](http://javadoc.io/page/org.mockito/mockito-core/latest/org/mockito/Mockito.html).
+
+### Convention over Configuration
+
+All `all.shared.gradle` plugins define two classes:
+
+* _PluginName_**Plugin**: which contains the class implements `Plugin` interface.
+
+* _PluginName_**Extension**: which represent the extension of the plugin.
+
+All `all.shared.gradle` plugins have two **`static`** members:
+
+* `String EXTENSION_NAME`: This will have the name of the extension that the plugin add.
+  * if the plugin does not add an extension the this field will not exist.
+
+* `boolean complement(final Project project)`: will apply the plugin and return true if successful, false otherwise.
+  * this methods is **exactly equivalent to the instance `apply` method**, but without instantiate the class if not required.
+
+Both are useful when applying the plugin when creating custom plugins.
 
 ## Documentation
 

@@ -9,12 +9,12 @@ import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileTreeElement
 
 @CompileStatic
-class FileLister {
+class FileListerExtension {
   private final static Iterable<String> EMPTY_ITERABLE = []
   private final static Iterable<String> DEFAULT_EXCLUDES = ['**/gradlew.*', '**/gradle', '**/.gradle', '**/build', '**/node_modules']
   private final Project project
 
-  FileLister (final Project project) {
+  FileListerExtension (final Project project) {
     this.project = project
   }
 
@@ -62,11 +62,11 @@ class FileLister {
     }
   }
 
-  final ConfigurableFileTree obtainFullFileTree(final String folder = '.', final Map<String, List<String>> cludes = [:]) {
+  ConfigurableFileTree obtainFullFileTree(final String folder = '.', final Map<String, List<String>> cludes = [:]) {
     showDebugInfo(obtainFileTree(folder, cludes?.excludes ?: EMPTY_ITERABLE, cludes?.includes ?: EMPTY_ITERABLE))
   }
 
-  final ConfigurableFileTree obtainPartialFileTree(final String folder = '.', final Map<String, List<String>> cludes = [:]) {
+  ConfigurableFileTree obtainPartialFileTree(final String folder = '.', final Map<String, List<String>> cludes = [:]) {
     final ConfigurableFileTree tree = obtainFullFileTree(folder, cludes)
     showDebugInfo((ConfigurableFileTree) tree.exclude(obtainAllExcludes(folder, tree)))
   }

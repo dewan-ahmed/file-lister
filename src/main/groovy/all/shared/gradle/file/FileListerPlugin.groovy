@@ -14,13 +14,11 @@ class FileListerPlugin implements Plugin<Project> {
   static final boolean complement(final Project project) {
     if (project.extensions.findByName(EXTENSION_NAME) == null) {
       project.extensions.create(EXTENSION_NAME, FileListerExtension, project)
-      project.logger.debug('Added file-lister extension')
-      true
+      project.logger.debug("Added $EXTENSION_NAME extension")
+      return true
     }
-    else {
-      project.logger.error('Couldn\'t add file-lister extension')
-      false
-    }
+    project.logger.error("Couldn't add $EXTENSION_NAME extension")
+    return false
   }
 
   void apply(final Project project) {

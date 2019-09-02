@@ -41,8 +41,10 @@ class FileListerPluginTest {
     final boolean result = FileListerPlugin.complement(mockProject)
 
     assertTrue(result)
-    verify(mockExtensions).create(eq(FileListerPlugin.EXTENSION_NAME), eq(FileListerExtension), eq(mockProject))
-    verify(mockLogger).debug(eq('Added file-lister extension'))
+    verify(mockExtensions)
+      .create(eq(FileListerPlugin.EXTENSION_NAME), eq(FileListerExtension), eq(mockProject))
+    verify(mockLogger)
+      .debug(eq('Added fileLister extension'))
   }
 
   @Test
@@ -54,8 +56,10 @@ class FileListerPluginTest {
     final boolean result = FileListerPlugin.complement(mockProject)
 
     assertFalse(result)
-    verify(mockExtensions, never()).create(eq(FileListerPlugin.EXTENSION_NAME), eq(FileListerExtension), eq(mockProject))
-    verify(mockLogger).error(eq('Couldn\'t add file-lister extension'))
+    verify(mockExtensions, never())
+      .create(eq(FileListerPlugin.EXTENSION_NAME), eq(FileListerExtension), eq(mockProject))
+    verify(mockLogger)
+      .error(eq('Couldn\'t add fileLister extension'))
   }
 
   @Test
@@ -64,7 +68,9 @@ class FileListerPluginTest {
 
     fileLister.apply(mockProject)
 
-    verify(mockExtensions).create(eq(FileListerPlugin.EXTENSION_NAME), eq(FileListerExtension), eq(mockProject))
-    verify(mockLogger).debug(eq('Added file-lister extension'))
+    verify(mockExtensions)
+      .create(eq(FileListerPlugin.EXTENSION_NAME), eq(FileListerExtension), eq(mockProject))
+    verify(mockLogger)
+      .debug(eq('Added fileLister extension'))
   }
 }

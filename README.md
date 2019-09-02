@@ -1,10 +1,35 @@
 # File lister
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](/LICENSE.txt) [![Download](https://api.bintray.com/packages/gmullerb/all.shared.gradle/file-lister/images/download.svg)](https://bintray.com/gmullerb/all.shared.gradle/file-lister/_latestVersion)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](/LICENSE.txt) [![Download](https://api.bintray.com/packages/gmullerb/all.shared.gradle/file-lister/images/download.svg)](https://bintray.com/gmullerb/all.shared.gradle/file-lister/_latestVersion) [![coverage report](https://gitlab.com/gmullerb/file-lister/badges/master/coverage.svg)](https://gitlab.com/gmullerb/project-style-checker/commits/master)
 
-**This project offers a small set of utilities for listing files from a Gradle project.**
+**File lister offers a small set of utilities for listing files to Gradle projects.**
 
 This project is licensed under the terms of the [MIT license](/LICENSE.txt).
+__________________
+
+## Quick Start
+
+1 . Apply the plugin:
+
+`build.gradle`:
+
+```gradle
+ plugins {
+   id 'all.shared.gradle.file-lister' version '1.0.2'
+ }
+```
+
+2 . Use `fileLister` methods, `obtainPartialFileTree` and/or `obtainFullFileTree`:
+
+`build.gradle`:
+
+```gradle
+  final someFilesInTree = fileLister.obtainPartialFileTree()
+  final allFilesInTree = fileLister.obtainFullFileTree()
+```
+
+3 . Jump to [Using/Configuration](#Using/Configuration), for customization or digging on How it works.
+__________________
 
 ## Goal
 
@@ -14,13 +39,12 @@ Get a file tree from a project's specified folder, excluding by default Gradle's
 
 Basically offers a small set of functions:
 
-* `obtainFullFileTree(folder, [excludes:[..], includes:[..]])`: A function for recursively listing all files from a project's specified folder, excluding and/or including a set of custom ANT patterns.
-* `obtainPartialFileTree(folder, [excludes:[..], includes:[..]])`: A function for recursively listing all files and/or folders from a project's specified folder, excluding and/or including a set of custom ANT patterns and excluding files listed in the `.gitignore`'s files found in the folder tree.
+* `ConfigurableFileTree obtainFullFileTree(folder, [excludes:[..], includes:[..]])`: A function for recursively listing all files and/or folders from a project's specified folder, excluding and/or including a set of custom ANT patterns.
+* `ConfigurableFileTree obtainPartialFileTree(folder, [excludes:[..], includes:[..]])`: A function for recursively listing all files and/or folders from a project's specified folder, excluding and/or including a set of custom ANT patterns and excluding files listed in the `.gitignore`'s files found in the folder tree.
 
 When using the core `fileTree` method, it excludes some file/folders by default[1], mainly commanded by ANT, e.g.: `**/.cvsignore`, `**/.git`, `**/.gitignore`, `**/.svn`, etc; that is good, but this plugin provides:
 
-* Additional exclusions based on Gradle: `**/gradlew.*`, `**/gradle`, `**/.gradle` and `**/build`.
-* Additional exclusions based on Nodes: `**/node_modules`.
+* Additional exclusions based on Gradle: `**/.gradle` and `**/gradle-wrapper.jar`.
 * Also one of the methods, `obtainPartialFileTree`, additionally excludes by default files/folders taking in account also the `.gitignore` files information (which is what is not sent from the project to the repository, what usually means that is not relevant to the project).
   * Git patterns containing `!`,`[` & `]` are not considered by the plugin.
 
@@ -56,7 +80,8 @@ The result will be:
 * When using `obtainPartialFileTree()`: `/folderA/file1.ext1`, `/folderA/file1.ext3` and `/folderB/file1.ext1`
 
 > [1] [All ANT default excludes](https://ant.apache.org/manual/dirtasks.html#defaultexcludes).  
-> [2] For an actual use example see [basecode project](https://github.com/gmullerb/basecode).
+> [2] For an actual use example, see [basecode project](https://github.com/gmullerb/basecode).
+__________________
 
 ## Using/Configuration
 
@@ -70,7 +95,7 @@ The result will be:
 
 ```gradle
  plugins {
-   id 'all.shared.gradle.file-lister' version '1.0'
+   id 'all.shared.gradle.file-lister' version '1.0.2'
  }
 ```
 
@@ -84,6 +109,54 @@ The result will be:
 * With all: `final filesInTree = fileLister.obtainFullFileTree('someFolder', [excludes: 'someANTpattern1', includes: 'someANTpattern2'])`, this will walk through `someFolder`, excluding `someANTpattern1` pattern and including `someANTpattern2` pattern [1].
 
 > [1] `excludes` pattern has precedence over `includes` patterns.
+
+### Using inside a plugin
+
+1 . Add dependency:
+
+```gradle
+  repositories {
+    jcenter()
+    maven {
+      url 'https://plugins.gradle.org/m2/'
+    }
+    maven {
+      url 'https://dl.bintray.com/gmullerb/all.shared.gradle'
+    }
+  }
+
+  dependencies {
+    compile gradleApi()
+    compile 'gradle.plugin.all.shared.gradle.file-lister:file-lister:+'
+  }
+```
+
+2 . Add plugin programmatically:
+
+```gradle
+  import all.shared.gradle.file.FileListerExtension
+  import all.shared.gradle.file.FileListerPlugin
+
+  ..
+
+    if (project.extensions.findByName(FileListerPlugin.EXTENSION_NAME) == null) {
+      plugin.apply(new FileListerPlugin())
+    }
+```
+
+3 . Access `filelister`:
+
+```gradle
+  ..
+  final FileTree result = ((FileListerExtension) project.extensions
+      .findByName(FileListerPlugin.EXTENSION_NAME))
+      .obtainPartialFileTree()
+  result.visit {
+    ..
+  }
+  ..
+```
+__________________
 
 ## Extending/Developing
 
@@ -106,18 +179,21 @@ git clone https://github.com/gmullerb/file-lister
 
 * **No need**, only download and run (It's Gradle! Yes!).
 
-### Building
+### Building it
 
 * To build it:
-  * `gradlew`: this will run default task, or
+  * `gradlew`: this will run default tasks, or
   * `gradlew build`.
 
 * To assess files:
-  * `gradlew assess`: will check common style of files.
-  * `gradlew assessGradle`: will check code style of Gradle's and Groovy's files.
-  * `assemble` task depends on these two tasks.
+  * `gradlew assessCommon`: will check common style of files.
+  * `gradlew assessGradle`: will check code style of Gradle's.
+  * `gradlew assess`: will check code style of Groovy's.
+    * `gradlew codenarcMain`: will check code style of Groovy's source files.
+    * `gradlew codenarcTest`: will check code style of Groovy's test files.
 
 * To test code: `gradlew test`
+  * This task is finalized with a Jacoco Report.
 
 * To get all the tasks for the project: `gradlew tasks --all`
 
@@ -139,21 +215,27 @@ git clone https://github.com/gmullerb/file-lister
 
 ### Convention over Configuration
 
-All `all.shared.gradle` plugins define two classes:
+All `all.shared.gradle` plugins define:
 
 * _PluginName_**Plugin**: which contains the class implements `Plugin` interface.
-
 * _PluginName_**Extension**: which represent the extension of the plugin.
+* If Tasks are define, then their names will be _TaskName_**Task**.
+* If Actions are define, then their names will be _ActionName_**Action**.
 
 All `all.shared.gradle` plugins have two **`static`** members:
 
 * `String EXTENSION_NAME`: This will have the name of the extension that the plugin add.
   * if the plugin does not add an extension the this field will not exist.
 
-* `boolean complement(final Project project)`: will apply the plugin and return true if successful, false otherwise.
+* `String TASK_NAME`: This will have the name of the **unique** task that the plugin add.
+  * if the plugin does not add a task or add more than one task, then this field will not exist.
+
+* `boolean complement(final ..)`: will apply the plugin and return true if successful, false otherwise.
   * this methods is **exactly equivalent to the instance `apply` method**, but without instantiate the class if not required.
 
-Both are useful when applying the plugin when creating custom plugins.
+Both may be useful when applying the plugin when creating custom plugins.
+
+All `all.shared.gradle` plugins "silently" fail when the extension can not be added.
 
 ## Documentation
 
@@ -164,6 +246,13 @@ Both are useful when applying the plugin when creating custom plugins.
 ## License
 
 [MIT License](/LICENSE.txt)
+__________________
+
+## Remember
+
+* Use code style verification tools => Encourages Best Practices, Efficiency, Readability and Learnability.
+* Start testing early => Encourages Reliability and Maintainability.
+* Code Review everything => Encourages Functional suitability, Performance Efficiency and Teamwork.
 
 ## Additional words
 
@@ -171,5 +260,16 @@ Don't forget:
 
 * **Love what you do**.
 * **Learn everyday**.
+* **Learn yourself**.
 * **Share your knowledge**.
 * **Learn from the past, dream on the future, live and enjoy the present to the max!**.
+
+At life:
+
+* Let's act, not complain.
+* Be flexible.
+
+At work:
+
+* Let's give solutions, not questions.
+* Aim to simplicity not intellectualism.
